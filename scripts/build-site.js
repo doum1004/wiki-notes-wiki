@@ -69,7 +69,16 @@ const html = `<!DOCTYPE html>
     .viz-main {
       flex: 1;
       display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
       min-height: 0;
+      align-items: stretch;
+    }
+    @media (max-width: 960px) {
+      .viz-main {
+        flex-direction: column;
+        overflow-y: auto;
+      }
     }
     .viz-panel {
       width: var(--panel-w);
@@ -83,6 +92,14 @@ const html = `<!DOCTYPE html>
       display: flex;
       flex-direction: column;
       gap: 0;
+    }
+    @media (max-width: 960px) {
+      .viz-panel {
+        width: 100%;
+        border-right: none;
+        border-bottom: 2px solid var(--wood);
+        max-height: none;
+      }
     }
     .viz-panel h2 {
       font-family: Fraunces, Georgia, serif;
@@ -149,68 +166,151 @@ const html = `<!DOCTYPE html>
       border-top: 1px dashed rgba(92,61,46,0.25);
       padding-top: 0.6rem;
     }
-    .viz-reader-wrap {
-      margin: 0.35rem 0 0.85rem;
-      flex: 1 1 auto;
-      min-height: 10rem;
-      max-height: min(44vh, 24rem);
+    .viz-canvas-wrap {
+      flex: 1 1 28%;
+      position: relative;
+      min-width: 0;
+      min-height: 0;
+      background: radial-gradient(ellipse at 50% 40%, rgba(124,92,255,0.12) 0%, transparent 55%);
+    }
+    @media (max-width: 960px) {
+      .viz-canvas-wrap {
+        flex: 1 1 auto;
+        min-height: 40vh;
+        height: 42vh;
+      }
+    }
+    .viz-doc {
+      flex: 0 1 46%;
+      min-width: min(42rem, 48vw);
+      max-width: 52rem;
       display: flex;
       flex-direction: column;
-      border: 1px solid rgba(92,61,46,0.22);
-      border-radius: 6px;
-      background: #fffefb;
-      overflow: hidden;
+      min-height: 0;
+      background: linear-gradient(180deg, #fffefb 0%, var(--paper) 100%);
+      color: var(--ink);
+      border-left: 3px solid var(--wood);
+      box-shadow: -6px 0 24px rgba(0,0,0,0.12);
     }
-    .viz-reader-head {
+    @media (max-width: 960px) {
+      .viz-doc {
+        flex: 1 1 auto;
+        min-width: 0;
+        max-width: none;
+        width: 100%;
+        min-height: 35vh;
+        border-left: none;
+        border-top: 3px solid var(--wood);
+        box-shadow: none;
+      }
+    }
+    .viz-doc-head {
       flex-shrink: 0;
-      padding: 0.45rem 0.55rem;
-      border-bottom: 1px solid rgba(92,61,46,0.12);
-      background: rgba(248,244,236,0.96);
+      padding: 0.65rem 1rem 0.55rem;
+      border-bottom: 1px solid rgba(92,61,46,0.15);
+      background: rgba(248,244,236,0.98);
     }
     #readerTitle {
       font-family: Fraunces, Georgia, serif;
-      font-size: 0.92rem;
+      font-size: 1.15rem;
       font-weight: 700;
       color: var(--wood);
-      line-height: 1.25;
+      line-height: 1.3;
+      display: block;
     }
     #readerPath {
       display: block;
-      margin-top: 0.2rem;
-      font-size: 0.68rem;
+      margin-top: 0.35rem;
+      font-size: 0.75rem;
       opacity: 0.78;
       word-break: break-all;
+      font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
     }
-    .viz-reader-body {
+    .viz-doc-body {
       flex: 1;
       min-height: 0;
       overflow-y: auto;
-      padding: 0.55rem 0.65rem;
-      font-size: 0.78rem;
-      line-height: 1.45;
-      color: var(--ink);
-    }
-    .viz-reader-pre {
-      white-space: pre-wrap;
-      word-break: break-word;
-      font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
-      font-size: 0.74rem;
-      margin: 0;
+      padding: 1rem 1.15rem 1.5rem;
+      font-size: 0.95rem;
+      line-height: 1.62;
     }
     .viz-reader-empty {
       margin: 0;
       opacity: 0.78;
       font-style: italic;
+      font-size: 0.95rem;
     }
-    .viz-reader-body code {
-      font-size: 0.92em;
+    .md-viewer > *:first-child { margin-top: 0; }
+    .md-viewer > *:last-child { margin-bottom: 0; }
+    .md-viewer h1, .md-viewer h2, .md-viewer h3, .md-viewer h4 {
+      font-family: Fraunces, Georgia, serif;
+      color: var(--wood);
+      margin: 1.1em 0 0.45em;
+      line-height: 1.25;
+      font-weight: 700;
+    }
+    .md-viewer h1 { font-size: 1.55rem; }
+    .md-viewer h2 { font-size: 1.28rem; }
+    .md-viewer h3 { font-size: 1.1rem; }
+    .md-viewer h4 { font-size: 1rem; }
+    .md-viewer p { margin: 0.65em 0; }
+    .md-viewer ul, .md-viewer ol { margin: 0.65em 0; padding-left: 1.35rem; }
+    .md-viewer li { margin: 0.25em 0; }
+    .md-viewer blockquote {
+      margin: 0.75em 0;
+      padding: 0.4rem 0.75rem;
+      border-left: 4px solid rgba(92,61,46,0.35);
+      background: rgba(92,61,46,0.06);
+      color: #2a2420;
+    }
+    .md-viewer a {
+      color: #4a3a9e;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    .md-viewer a:hover { color: var(--glow); }
+    .md-viewer hr {
+      border: none;
+      border-top: 1px solid rgba(92,61,46,0.2);
+      margin: 1.25em 0;
+    }
+    .md-viewer code {
+      font-size: 0.88em;
       font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+      background: rgba(92,61,46,0.08);
+      padding: 0.12em 0.35em;
+      border-radius: 4px;
     }
-    .viz-canvas-wrap {
-      flex: 1;
-      position: relative;
-      min-width: 0;
-      background: radial-gradient(ellipse at 50% 40%, rgba(124,92,255,0.12) 0%, transparent 55%);
+    .md-viewer pre {
+      margin: 0.85em 0;
+      padding: 0.75rem 0.85rem;
+      overflow-x: auto;
+      background: #1e1b26;
+      color: #e8e4f0;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      line-height: 1.45;
+    }
+    .md-viewer pre code {
+      background: none;
+      padding: 0;
+      color: inherit;
+      font-size: inherit;
+    }
+    .md-viewer table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 0.85em 0;
+      font-size: 0.88rem;
+    }
+    .md-viewer th, .md-viewer td {
+      border: 1px solid rgba(92,61,46,0.22);
+      padding: 0.35rem 0.5rem;
+      text-align: left;
+    }
+    .md-viewer th {
+      background: rgba(92,61,46,0.1);
+      font-weight: 600;
     }
     #viz-svg {
       width: 100%;
@@ -258,43 +358,38 @@ const html = `<!DOCTYPE html>
         <input type="search" id="searchFilter" placeholder="Search titles & paths…" autocomplete="off" />
         <button type="button" id="btnReset">Reset view & focus</button>
       </div>
-      <h2>Reading desk</h2>
-      <p class="blurb" style="margin-top:-0.15rem">Open a page from the graph; the note text (markdown) appears here. Rebuild the site after edits so the graph picks up new content.</p>
-      <div class="viz-reader-wrap" aria-live="polite">
-        <div class="viz-reader-head">
-          <span id="readerTitle"></span>
-          <span id="readerPath"></span>
-        </div>
-        <div id="readerBody" class="viz-reader-body">
-          <p class="viz-reader-empty">Click a page in the graph to read it here.</p>
-        </div>
-      </div>
       <h2>Shelf key</h2>
       <div class="viz-legend-row"><span class="swatch" style="background:#4a9eff"></span><span><strong>Entities</strong> — who &amp; what you track</span></div>
       <div class="viz-legend-row"><span class="swatch" style="background:#4caf50"></span><span><strong>Concepts</strong> — ideas &amp; frameworks</span></div>
       <div class="viz-legend-row"><span class="swatch" style="background:#ff9800"></span><span><strong>Sources</strong> — readings &amp; inputs</span></div>
       <div class="viz-legend-row"><span class="swatch" style="background:#ab47bc"></span><span><strong>Synthesis</strong> — cross-cutting views</span></div>
       <div class="viz-legend-row"><span class="swatch" style="background:#888"></span><span><strong>Other</strong> — index, log, templates…</span></div>
-      <p class="viz-hint">Tip: click a node to read it here and spotlight its neighborhood. Click the same node again to clear. Double-click empty space to clear focus. Drag nodes to rearrange.</p>
+      <p class="viz-hint">Tip: click a node in the graph to open the full page in the reader column and spotlight its neighborhood. On small screens the reader stacks below the graph. Rebuild graph + site after edits. Click the same node again to clear.</p>
     </aside>
     <div class="viz-canvas-wrap" aria-label="Graph canvas">
       <svg id="viz-svg" role="img" aria-label="Wiki link graph"></svg>
     </div>
+    <article class="viz-doc" aria-label="Page reader">
+      <div class="viz-doc-head">
+        <span id="readerTitle"></span>
+        <span id="readerPath"></span>
+      </div>
+      <div id="readerBody" class="viz-doc-body md-viewer" aria-live="polite">
+        <p class="viz-reader-empty">Click a page in the graph to read it here.</p>
+      </div>
+    </article>
   </main>
   <div class="tooltip" id="tooltip" role="tooltip"></div>
   <style>.sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); border:0; }</style>
   <script type="module">
     import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
+    import { marked } from "https://cdn.jsdelivr.net/npm/marked@12/+esm";
+    import DOMPurify from "https://cdn.jsdelivr.net/npm/dompurify@3/+esm";
 
     const data = ${JSON.stringify(graph)};
 
-    function escapeHtml(s) {
-      return String(s)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;");
-    }
+    const mdOpts = { gfm: true, breaks: true, headerIds: false, mangle: false };
+
     function showReader(d) {
       const titleEl = document.getElementById("readerTitle");
       const pathEl = document.getElementById("readerPath");
@@ -304,11 +399,14 @@ const html = `<!DOCTYPE html>
       pathEl.textContent = d.id;
       const raw = typeof d.body === "string" ? d.body : "";
       if (!raw) {
-        bodyEl.innerHTML =
-          '<p class="viz-reader-empty">No text for this page in graph.json. Run <code>node scripts/build-graph.js</code> then rebuild the site.</p>';
+        bodyEl.innerHTML = DOMPurify.sanitize(
+          '<p class="viz-reader-empty">No text for this page in graph.json. Run <code>node scripts/build-graph.js</code> then rebuild the site.</p>',
+          { USE_PROFILES: { html: true } },
+        );
         return;
       }
-      bodyEl.innerHTML = '<pre class="viz-reader-pre">' + escapeHtml(raw) + "</pre>";
+      const dirty = marked.parse(raw, mdOpts);
+      bodyEl.innerHTML = DOMPurify.sanitize(dirty, { USE_PROFILES: { html: true } });
     }
     function clearReader() {
       const titleEl = document.getElementById("readerTitle");
@@ -317,7 +415,10 @@ const html = `<!DOCTYPE html>
       if (titleEl) titleEl.textContent = "";
       if (pathEl) pathEl.textContent = "";
       if (bodyEl) {
-        bodyEl.innerHTML = '<p class="viz-reader-empty">Click a page in the graph to read it here.</p>';
+        bodyEl.innerHTML = DOMPurify.sanitize(
+          '<p class="viz-reader-empty">Click a page in the graph to read it here.</p>',
+          { USE_PROFILES: { html: true } },
+        );
       }
     }
 
