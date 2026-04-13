@@ -1,0 +1,10 @@
+name: notes-wiki
+domain: general
+created: '2026-04-13T02:48:05.865Z'
+backend: git
+paths:
+  raw: raw
+  wiki: wiki
+  schema: SCHEMA.md
+git:
+  repo: doum1004/wiki-notes-wiki
