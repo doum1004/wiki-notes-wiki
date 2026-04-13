@@ -22,9 +22,6 @@ const html = `<!DOCTYPE html>
       --glow: #7c5cff;
       --synapse: rgba(180, 200, 255, 0.35);
       --panel-w: 300px;
-      --library-w: 300px;
-      --reader-px: 380px;
-      --gutter-hit: 10px;
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     .viz-root {
@@ -48,7 +45,7 @@ const html = `<!DOCTYPE html>
     }
     .viz-header {
       flex-shrink: 0;
-      padding: calc(0.65rem + env(safe-area-inset-top, 0px)) calc(1.25rem + env(safe-area-inset-right, 0px)) 0.65rem calc(1.25rem + env(safe-area-inset-left, 0px));
+      padding: 0.65rem 1.25rem;
       border-bottom: 1px solid rgba(255,255,255,0.08);
       background: linear-gradient(180deg, rgba(20,16,32,0.95), rgba(12,10,20,0.6));
       display: flex;
@@ -72,53 +69,19 @@ const html = `<!DOCTYPE html>
     .viz-main {
       flex: 1;
       display: flex;
-      flex-direction: column;
+      flex-direction: row;
+      flex-wrap: nowrap;
       min-height: 0;
       align-items: stretch;
-      padding-left: env(safe-area-inset-left, 0px);
-      padding-right: env(safe-area-inset-right, 0px);
-      padding-bottom: env(safe-area-inset-bottom, 0px);
-    }
-    @media (min-width: 961px) {
-      .viz-main {
-        display: grid;
-        grid-template-columns: var(--library-w) var(--gutter-hit) minmax(200px, 1fr) var(--gutter-hit) minmax(260px, min(var(--reader-px), 50vw));
-        grid-template-rows: 1fr;
-        overflow: hidden;
-      }
-      .library-panel { grid-column: 1; }
-      .viz-gutter--left { grid-column: 2; }
-      .viz-canvas-wrap { grid-column: 3; }
-      .viz-gutter--right { grid-column: 4; }
-      .viz-doc { grid-column: 5; }
     }
     @media (max-width: 960px) {
       .viz-main {
         flex-direction: column;
         overflow-y: auto;
       }
-      .viz-gutter { display: none !important; }
     }
-    .viz-gutter {
-      display: none;
-      background: rgba(255,255,255,0.06);
-      cursor: col-resize;
-      touch-action: none;
-      flex-shrink: 0;
-      position: relative;
-      z-index: 2;
-    }
-    @media (min-width: 961px) {
-      .viz-gutter { display: block; }
-    }
-    .viz-gutter:hover,
-    .viz-gutter:focus-visible {
-      background: rgba(124, 92, 255, 0.35);
-    }
-    .viz-gutter:focus { outline: 2px solid rgba(124, 92, 255, 0.7); outline-offset: -2px; }
     .viz-panel {
-      width: 100%;
-      max-width: 100%;
+      width: var(--panel-w);
       flex-shrink: 0;
       padding: 1rem 1.1rem 1.25rem;
       background: linear-gradient(165deg, var(--paper) 0%, var(--paper2) 100%);
@@ -136,12 +99,6 @@ const html = `<!DOCTYPE html>
         border-right: none;
         border-bottom: 2px solid var(--wood);
         max-height: none;
-      }
-    }
-    @media (min-width: 961px) {
-      .viz-panel {
-        width: 100%;
-        min-width: 0;
       }
     }
     .viz-panel h2 {
@@ -178,8 +135,7 @@ const html = `<!DOCTYPE html>
     .viz-controls button {
       font-family: inherit;
       font-size: 0.8rem;
-      padding: 0.55rem 0.75rem;
-      min-height: 44px;
+      padding: 0.45rem 0.6rem;
       border-radius: 4px;
       border: 1px solid var(--wood);
       background: #fffefb;
@@ -187,9 +143,6 @@ const html = `<!DOCTYPE html>
       cursor: pointer;
     }
     .viz-controls button:hover { background: var(--paper2); }
-    @media (min-width: 961px) {
-      .viz-controls button { min-height: 0; padding: 0.45rem 0.6rem; }
-    }
     .viz-legend-row {
       display: flex;
       align-items: center;
@@ -239,79 +192,23 @@ const html = `<!DOCTYPE html>
       border-left: 3px solid var(--wood);
       box-shadow: -6px 0 24px rgba(0,0,0,0.12);
     }
-    @media (min-width: 961px) {
-      .viz-doc {
-        min-width: 0;
-        max-width: none;
-        width: 100%;
-      }
-    }
     @media (max-width: 960px) {
       .viz-doc {
         flex: 1 1 auto;
         min-width: 0;
         max-width: none;
         width: 100%;
-        min-height: 0;
+        min-height: 35vh;
         border-left: none;
         border-top: 3px solid var(--wood);
         box-shadow: none;
       }
     }
-    .viz-doc--idle .viz-doc-body,
-    .viz-doc--body-collapsed .viz-doc-body {
-      flex: 0 0 auto;
-      max-height: 0;
-      min-height: 0;
-      opacity: 0;
-      padding-top: 0;
-      padding-bottom: 0;
-      overflow: hidden;
-      pointer-events: none;
-    }
     .viz-doc-head {
       flex-shrink: 0;
-      display: flex;
-      align-items: flex-start;
-      gap: 0.5rem;
       padding: 0.65rem 1rem 0.55rem;
       border-bottom: 1px solid rgba(92,61,46,0.15);
       background: rgba(248,244,236,0.98);
-    }
-    .viz-doc-head-titles {
-      flex: 1;
-      min-width: 0;
-    }
-    .viz-doc-toggle,
-    .viz-doc-close {
-      font-family: inherit;
-      flex-shrink: 0;
-      min-width: 44px;
-      min-height: 44px;
-      padding: 0.25rem 0.5rem;
-      border-radius: 6px;
-      border: 1px solid rgba(92,61,46,0.35);
-      background: #fffefb;
-      color: var(--wood);
-      cursor: pointer;
-      font-size: 0.85rem;
-      line-height: 1.2;
-    }
-    @media (min-width: 961px) {
-      .viz-doc-toggle,
-      .viz-doc-close { min-width: 2rem; min-height: 2rem; padding: 0.2rem 0.45rem; }
-    }
-    .viz-doc-toggle[hidden],
-    .viz-doc-close[hidden] { display: none !important; }
-    .viz-doc-toggle:hover,
-    .viz-doc-close:hover { background: var(--paper2); }
-    #readerStub {
-      font-family: Fraunces, Georgia, serif;
-      font-size: 0.95rem;
-      font-weight: 600;
-      color: var(--wood);
-      line-height: 1.35;
-      display: block;
     }
     #readerTitle {
       font-family: Fraunces, Georgia, serif;
@@ -321,8 +218,6 @@ const html = `<!DOCTYPE html>
       line-height: 1.3;
       display: block;
     }
-    #readerTitle[hidden],
-    #readerPath[hidden] { display: none !important; }
     #readerPath {
       display: block;
       margin-top: 0.35rem;
@@ -338,7 +233,6 @@ const html = `<!DOCTYPE html>
       padding: 1rem 1.15rem 1.5rem;
       font-size: 0.95rem;
       line-height: 1.62;
-      transition: max-height 0.2s ease, opacity 0.2s ease, padding 0.2s ease;
     }
     .viz-reader-empty {
       margin: 0;
@@ -423,7 +317,6 @@ const html = `<!DOCTYPE html>
       height: 100%;
       display: block;
       cursor: grab;
-      touch-action: none;
     }
     #viz-svg:active { cursor: grabbing; }
     .tooltip {
@@ -471,22 +364,15 @@ const html = `<!DOCTYPE html>
       <div class="viz-legend-row"><span class="swatch" style="background:#ff9800"></span><span><strong>Sources</strong> — readings &amp; inputs</span></div>
       <div class="viz-legend-row"><span class="swatch" style="background:#ab47bc"></span><span><strong>Synthesis</strong> — cross-cutting views</span></div>
       <div class="viz-legend-row"><span class="swatch" style="background:#888"></span><span><strong>Other</strong> — index, log, templates…</span></div>
-      <p class="viz-hint">Tip: click a node to read it and spotlight links; click the same node again, press Escape, or Close in the reader to clear. Drag the narrow bars between shelf, graph, and reader (wide screens) to resize. On phones the reader stays compact until you pick a page — pinch and drag on the graph to zoom and pan. Rebuild graph + site after edits.</p>
+      <p class="viz-hint">Tip: click a node in the graph to open the full page in the reader column and spotlight its neighborhood. On small screens the reader stacks below the graph. Rebuild graph + site after edits. Click the same node again to clear.</p>
     </aside>
-    <div class="viz-gutter viz-gutter--left" role="separator" aria-orientation="vertical" aria-label="Resize library column" tabindex="0"></div>
     <div class="viz-canvas-wrap" aria-label="Graph canvas">
       <svg id="viz-svg" role="img" aria-label="Wiki link graph"></svg>
     </div>
-    <div class="viz-gutter viz-gutter--right" role="separator" aria-orientation="vertical" aria-label="Resize reader column" tabindex="0"></div>
-    <article class="viz-doc viz-doc--idle" id="vizReader" aria-label="Page reader">
+    <article class="viz-doc" aria-label="Page reader">
       <div class="viz-doc-head">
-        <button type="button" class="viz-doc-toggle" id="readerToggle" hidden aria-expanded="true" aria-controls="readerBody" title="Collapse or expand page">▾</button>
-        <div class="viz-doc-head-titles">
-          <span id="readerStub" class="viz-doc-stub">Reader — select a page from the graph</span>
-          <span id="readerTitle"></span>
-          <span id="readerPath"></span>
-        </div>
-        <button type="button" class="viz-doc-close" id="readerClose" hidden aria-label="Clear selection">Close</button>
+        <span id="readerTitle"></span>
+        <span id="readerPath"></span>
       </div>
       <div id="readerBody" class="viz-doc-body md-viewer" aria-live="polite">
         <p class="viz-reader-empty">Click a page in the graph to read it here.</p>
@@ -503,58 +389,12 @@ const html = `<!DOCTYPE html>
     const data = ${JSON.stringify(graph)};
 
     const mdOpts = { gfm: true, breaks: true, headerIds: false, mangle: false };
-    const SPLIT_LS_KEY = "llmwikiVizSplit";
-    const useHoverTips = !window.matchMedia("(pointer: coarse)").matches;
-
-    let selected = null;
-    let searchQ = "";
-
-    function syncHash() {
-      const base = location.pathname + location.search;
-      if (!selected) {
-        if (location.hash) history.replaceState(null, "", base);
-        return;
-      }
-      const frag = "#/" + encodeURIComponent(selected);
-      if (location.hash !== frag) history.replaceState(null, "", frag);
-    }
-
-    function updateReaderChrome() {
-      const doc = document.getElementById("vizReader");
-      const stub = document.getElementById("readerStub");
-      const titleEl = document.getElementById("readerTitle");
-      const pathEl = document.getElementById("readerPath");
-      const toggle = document.getElementById("readerToggle");
-      const closeBtn = document.getElementById("readerClose");
-      if (!doc || !stub || !titleEl || !pathEl || !toggle || !closeBtn) return;
-      if (!selected) {
-        doc.classList.add("viz-doc--idle");
-        doc.classList.remove("viz-doc--body-collapsed");
-        stub.hidden = false;
-        titleEl.hidden = true;
-        pathEl.hidden = true;
-        toggle.hidden = true;
-        closeBtn.hidden = true;
-        return;
-      }
-      doc.classList.remove("viz-doc--idle");
-      stub.hidden = true;
-      titleEl.hidden = false;
-      pathEl.hidden = false;
-      toggle.hidden = false;
-      closeBtn.hidden = false;
-      const collapsed = doc.classList.contains("viz-doc--body-collapsed");
-      toggle.setAttribute("aria-expanded", collapsed ? "false" : "true");
-      toggle.textContent = collapsed ? "▸" : "▾";
-    }
 
     function showReader(d) {
       const titleEl = document.getElementById("readerTitle");
       const pathEl = document.getElementById("readerPath");
       const bodyEl = document.getElementById("readerBody");
-      const doc = document.getElementById("vizReader");
-      if (!titleEl || !pathEl || !bodyEl || !doc) return;
-      doc.classList.remove("viz-doc--idle", "viz-doc--body-collapsed");
+      if (!titleEl || !pathEl || !bodyEl) return;
       titleEl.textContent = d.title || d.id;
       pathEl.textContent = d.id;
       const raw = typeof d.body === "string" ? d.body : "";
@@ -563,22 +403,15 @@ const html = `<!DOCTYPE html>
           '<p class="viz-reader-empty">No text for this page in graph.json. Run <code>node scripts/build-graph.js</code> then rebuild the site.</p>',
           { USE_PROFILES: { html: true } },
         );
-      } else {
-        const dirty = marked.parse(raw, mdOpts);
-        bodyEl.innerHTML = DOMPurify.sanitize(dirty, { USE_PROFILES: { html: true } });
+        return;
       }
-      updateReaderChrome();
-      syncHash();
-      if (window.matchMedia("(max-width: 960px)").matches) {
-        doc.scrollIntoView({ behavior: "smooth", block: "nearest" });
-      }
+      const dirty = marked.parse(raw, mdOpts);
+      bodyEl.innerHTML = DOMPurify.sanitize(dirty, { USE_PROFILES: { html: true } });
     }
-
     function clearReader() {
       const titleEl = document.getElementById("readerTitle");
       const pathEl = document.getElementById("readerPath");
       const bodyEl = document.getElementById("readerBody");
-      const doc = document.getElementById("vizReader");
       if (titleEl) titleEl.textContent = "";
       if (pathEl) pathEl.textContent = "";
       if (bodyEl) {
@@ -587,101 +420,6 @@ const html = `<!DOCTYPE html>
           { USE_PROFILES: { html: true } },
         );
       }
-      if (doc) {
-        doc.classList.add("viz-doc--idle");
-        doc.classList.remove("viz-doc--body-collapsed");
-      }
-      updateReaderChrome();
-      syncHash();
-    }
-
-    function clearSelectionAndReader() {
-      selected = null;
-      clearReader();
-      applyFocusOpacity();
-    }
-
-    function readCssSplitPx() {
-      const root = getComputedStyle(document.documentElement);
-      const l = parseFloat(root.getPropertyValue("--library-w")) || 300;
-      const r = parseFloat(root.getPropertyValue("--reader-px")) || 380;
-      return { l, r };
-    }
-
-    function applySplitCss(libPx, readerPx) {
-      document.documentElement.style.setProperty("--library-w", libPx + "px");
-      document.documentElement.style.setProperty("--reader-px", readerPx + "px");
-    }
-
-    function saveSplit(libPx, readerPx) {
-      try {
-        localStorage.setItem(SPLIT_LS_KEY, JSON.stringify({ l: libPx, r: readerPx }));
-      } catch (_) {}
-    }
-
-    function loadSplit() {
-      try {
-        const raw = localStorage.getItem(SPLIT_LS_KEY);
-        if (!raw) return;
-        const o = JSON.parse(raw);
-        if (typeof o.l === "number" && typeof o.r === "number") {
-          applySplitCss(
-            Math.min(440, Math.max(200, o.l)),
-            Math.min(620, Math.max(260, o.r)),
-          );
-        }
-      } catch (_) {}
-    }
-
-    function startGutterDrag(which, e) {
-      if (window.innerWidth < 961) return;
-      e.preventDefault();
-      const startX = e.clientX;
-      const start = readCssSplitPx();
-      const startL = start.l;
-      const startR = start.r;
-      function onMove(ev) {
-        const dx = ev.clientX - startX;
-        if (which === "left") {
-          const nl = Math.min(440, Math.max(200, startL + dx));
-          applySplitCss(nl, startR);
-        } else {
-          const nr = Math.min(620, Math.max(260, startR + dx));
-          applySplitCss(startL, nr);
-        }
-      }
-      function onUp() {
-        window.removeEventListener("mousemove", onMove);
-        window.removeEventListener("mouseup", onUp);
-        const px = readCssSplitPx();
-        saveSplit(px.l, px.r);
-      }
-      window.addEventListener("mousemove", onMove);
-      window.addEventListener("mouseup", onUp);
-    }
-
-    function applyHashFromLocation() {
-      const h = location.hash;
-      if (!h || h.length < 3 || !h.startsWith("#/")) {
-        if (selected) {
-          selected = null;
-          clearReader();
-          applyFocusOpacity();
-        }
-        return;
-      }
-      let id;
-      try {
-        id = decodeURIComponent(h.slice(2));
-      } catch {
-        return;
-      }
-      const nodeData = data.nodes.find((n) => n.id === id);
-      if (!nodeData) return;
-      selected = id;
-      showReader(nodeData);
-      if (searchQ.trim()) applySearch();
-      else applyFocusOpacity();
     }
 
     const DIR_COLORS = {
@@ -812,7 +550,6 @@ const html = `<!DOCTYPE html>
 
     document.getElementById("stat-nodes").textContent = String(data.nodes.length);
     document.getElementById("stat-edges").textContent = String(data.edges.length);
-    loadSplit();
 
     const tooltip = document.getElementById("tooltip");
     function showTip(e, d) {
@@ -832,24 +569,29 @@ const html = `<!DOCTYPE html>
     function hideTip() {
       tooltip.style.display = "none";
     }
+    let selected = null;
+    let searchQ = "";
 
-    if (useHoverTips) {
-      node
-        .on("mouseover", (e, d) => showTip(e, d))
-        .on("mousemove", positionTip)
-        .on("mouseout", hideTip);
-    }
-    node.on("click", (e, d) => {
-      e.stopPropagation();
-      if (selected === d.id) {
-        clearSelectionAndReader();
-        return;
-      }
-      selected = d.id;
-      showReader(d);
-      if (searchQ.trim()) applySearch();
-      else applyFocusOpacity();
-    });
+    node
+      .on("mouseover", (e, d) => showTip(e, d))
+      .on("mousemove", positionTip)
+      .on("mouseout", hideTip)
+      .on("click", (e, d) => {
+        e.stopPropagation();
+        if (searchQ.trim()) {
+          showReader(d);
+          applySearch();
+          return;
+        }
+        if (selected === d.id) {
+          selected = null;
+          clearReader();
+        } else {
+          selected = d.id;
+          showReader(d);
+        }
+        applyFocusOpacity();
+      });
 
     function applySearch() {
       const q = searchQ.trim().toLowerCase();
@@ -919,50 +661,6 @@ const html = `<!DOCTYPE html>
       applySearch();
     });
 
-    const leftGutter = document.querySelector(".viz-gutter--left");
-    const rightGutter = document.querySelector(".viz-gutter--right");
-    if (leftGutter) {
-      leftGutter.addEventListener("mousedown", (e) => startGutterDrag("left", e));
-      leftGutter.addEventListener("keydown", (e) => {
-        if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
-        e.preventDefault();
-        const px = readCssSplitPx();
-        const delta = e.key === "ArrowRight" ? 12 : -12;
-        applySplitCss(Math.min(440, Math.max(200, px.l + delta)), px.r);
-        saveSplit(readCssSplitPx().l, readCssSplitPx().r);
-      });
-    }
-    if (rightGutter) {
-      rightGutter.addEventListener("mousedown", (e) => startGutterDrag("right", e));
-      rightGutter.addEventListener("keydown", (e) => {
-        if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
-        e.preventDefault();
-        const px = readCssSplitPx();
-        const delta = e.key === "ArrowRight" ? 12 : -12;
-        applySplitCss(px.l, Math.min(620, Math.max(260, px.r + delta)));
-        saveSplit(readCssSplitPx().l, readCssSplitPx().r);
-      });
-    }
-
-    const readerCloseBtn = document.getElementById("readerClose");
-    if (readerCloseBtn) readerCloseBtn.addEventListener("click", () => clearSelectionAndReader());
-    const readerToggleBtn = document.getElementById("readerToggle");
-    if (readerToggleBtn) {
-      readerToggleBtn.addEventListener("click", () => {
-        const doc = document.getElementById("vizReader");
-        if (!doc || !selected) return;
-        doc.classList.toggle("viz-doc--body-collapsed");
-        updateReaderChrome();
-      });
-    }
-
-    document.addEventListener("keydown", (e) => {
-      if (e.key !== "Escape") return;
-      clearSelectionAndReader();
-    });
-
-    window.addEventListener("hashchange", () => applyHashFromLocation());
-
     simulation.on("tick", () => {
       link.attr("d", linkPath);
       node.attr("cx", (d) => d.x).attr("cy", (d) => d.y);
@@ -984,8 +682,6 @@ const html = `<!DOCTYPE html>
       resizeT = setTimeout(relayout, 120);
     });
 
-    updateReaderChrome();
-    applyHashFromLocation();
     applyFocusOpacity();
   </script>
 </body>
