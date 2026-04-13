@@ -2,7 +2,7 @@ name: Build Wiki Visualization
 
 on:
   push:
-    branches: [main]
+    branches: [main, master]
 
 permissions:
   pages: write
