@@ -2,7 +2,7 @@ name: Build Wiki Visualization
 
 on:
   push:
-    branches: [main, master]
+    branches: [main]
 
 permissions:
   pages: write
@@ -27,8 +27,6 @@ jobs:
       - name: Build graph data
         run: node scripts/build-graph.js
       - name: Build site
-        env:
-          GITHUB_REPOSITORY: ${{ github.repository }}
         run: node scripts/build-site.js
       - name: Configure Pages
         uses: actions/configure-pages@v5
