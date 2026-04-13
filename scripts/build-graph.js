@@ -25,6 +25,12 @@ function extractTitle(content, filePath) {
   return path.basename(filePath, ".md").replace(/-/g, " ");
 }
 
+function stripFrontmatter(content) {
+  const m = content.match(/^---\r?\n[\s\S]*?\r?\n---\r?\n/);
+  if (m) return content.slice(m[0].length).trim();
+  return content.trim();
+}
+
 function resolveLink(target, allFiles) {
   const withMd = target.endsWith(".md") ? target : target + ".md";
   const candidates = allFiles.map((f) => f.replace(/\\/g, "/"));
@@ -55,7 +61,7 @@ for (const file of files) {
   const content = fs.readFileSync(file, "utf-8");
   const relPath = file.replace(/\\/g, "/");
   const dir = relPath.split("/")[1] || "wiki";
-  nodes.push({ id: relPath, title: extractTitle(content, file), dir });
+  nodes.push({ id: relPath, title: extractTitle(content, file), dir, body: stripFrontmatter(content) });
 
   let match;
   const re = new RegExp(WIKILINK_RE.source, "g");
